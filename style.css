@@ -1,0 +1,57 @@
+body{
+	background-image: url("public/imgs/bg_bright_blue.jpg");
+}
+
+.text-defaut-padding{
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+.button-defaut-margin{
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.postIt-container{
+	margin-top: 10%;
+	display: flex;
+    list-style: none;
+    flex-wrap: wrap;
+}
+
+.postIt{
+    display: flex;
+    margin: 1em;
+    width: 330px;
+    height: 330px;    
+    background: floralwhite;
+    border-radius: 10px;
+}
+
+.postItInput{
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.side-color{
+	background-color: green;
+	width: 10%;
+}
+
+.content-postIt{
+	padding-left: 1em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.postIt-title{
+	font-size: 2em;
+}
+
+.postIt-text{
+	display: initial;
+}

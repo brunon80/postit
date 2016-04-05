@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html ng-app="postitApp">
+  <head>
+    <meta charset="utf-8">
+    <title>Angular.js PostIt</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+    <script>
+      var countryApp = angular.module('postitApp', []);
+      countryApp.controller('postItCtrl', function ($scope){
+
+      	$scope.addPostIt = function() {
+          $scope.postIts.push({"title": $scope.enteredTitle, "text": $scope.enteredText, "color": $scope.enteredPostItColor});
+          $scope.enteredTitle = '';
+          $scope.enteredText = '';
+          $scope.enteredPostItColor = '';
+        };
+
+        $scope.postIts = [
+          {"title": "TitleJS", "text": "Write Something", "color": "green"},
+          {"title": "TitleJS","text": "Write Something", "color": "red"},
+          {"title": "TitleJS","text": "Write Something", "color": "yellow"}
+          
+        ];
+      });
+    </script>
+  </head>
+  <body ng-controller="postItCtrl">
+  <nav class="navbar navbar-inverse">
+	  <div class="container-fluid">
+	    <div class="navbar-header">
+	      <a class="navbar-brand" href="#">Post It!</a>
+	    </div>
+	    <ul class="nav navbar-nav">
+	      <li data-toggle="modal" data-target="#myModal"><a href="#">Add a post it</a></li>
+	    </ul>
+	    <ul class="nav navbar-nav navbar-right">
+	      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+	      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+	    </ul>
+	  </div>
+	</nav>
+  	<div class="container">
+  		<ul class="postIt-container">
+	      <li class="postIt" ng-repeat="postIt in postIts">
+	      	<div class="side-color" style="background: {{postIt.color}};"></div>
+	      	<div class="content-postIt">
+	      		<div class="postIt-title">
+	      			{{postIt.title}}
+	      		</div>
+	      		<div class="postIt-text">
+	      			{{postIt.text}}
+	      		</div>
+	      	</div>
+	      </li>
+	    </ul>
+	    <div id="myModal" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Modal Header</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form class="postItInput form-group" ng-submit="addPostIt()">
+	        		<label class="text-defaut-padding">Give a Title to your Post It:</label>
+			     	<input type="text" ng-model="enteredTitle">
+			     	<label class="text-defaut-padding">Just write what you need:</label>
+			      	<textarea class="form-control" rows="5" ng-model="enteredText"></textarea>
+			      	<label class="text-defaut-padding">Choose a Color:</label>
+			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
+			      	<div class="btn-group">
+					  <button type="button" class="btn btn-primary">Blue</button>
+					  <button type="button" class="btn btn-success">Green</button>
+					  <button type="button" class="btn btn-danger">Red</button>
+					</div>
+			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="add">
+			    </form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		    </div>
+
+		  </div>
+		</div>
+	    
+  	</div>
+    
+  </body>
+</html>

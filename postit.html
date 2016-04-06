@@ -13,25 +13,25 @@
     <script>
       var postitApp = angular.module('postitApp', []);
       postitApp.controller('postItCtrl', function ($scope){
-      	$scope.colorSelected = "green";
-  		$( '#blue' ).click(
-		  function() {
-		  	$scope.colorSelected = "blue";
+      	$scope.colorSelected = "gray";
+  		
+		$scope.choosedColor = function (colorChoosed) {
+			
+			switch(colorChoosed) {
+				case "blue":
+					$scope.colorSelected = "blue";
+					break;
+				case "green":
+					$scope.colorSelected = "green";
+					break;
+				case "red":
+					$scope.colorSelected = "red";
+					break;
+				default:
+					 $scope.colorSelected = "gray"
+			}
+		}
 
-		  }
-		);
-		$( '#green' ).click(
-		  function() {
-		  	$scope.colorSelected = "green";
-
-		  }
-		);
-		$( '#red' ).click(
-		  function() {
-		  	$scope.colorSelected = "red";
-
-		  }
-		);
       	$scope.addPostIt = function(enteredTitle, enteredText) {
 
             $scope.postIts.push({title: enteredTitle, text: enteredText, color: $scope.colorSelected});
@@ -80,6 +80,7 @@
 	      		<div class="postIt-text">
 	      			{{postIt.text}}
 	      		</div>
+	      		<a href="" ng-click="removePostIt(postIt)"><span class="close">X</span></a>
 	      	</div>
 	      </li>
 	    </ul>
@@ -101,9 +102,9 @@
 			      	<label class="text-defaut-padding">Choose a Color:</label>
 			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
 			      	<div class="btn-group">
-					  <button type="button" id="blue" class="btn btn-primary">Blue</button>
-					  <button type="button" id="green" class="btn btn-success">Green</button>
-					  <button type="button" id="red" class="btn btn-danger">Red</button>
+					  <button type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
+					  <button type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
+					  <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
 					</div>
 			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="add">
 			    </form>

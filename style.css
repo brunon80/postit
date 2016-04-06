@@ -1,3 +1,4 @@
+
 body{
 	background-image: url("public/imgs/bg_bright_blue.jpg");
 	background-repeat: repeat-y;
@@ -22,6 +23,7 @@ body{
 }
 
 .postIt{
+	position: relative;
     display: flex;
     margin: 1em;
     width: 330px;
@@ -56,4 +58,10 @@ body{
 
 .postIt-text{
 	display: initial;
+}
+
+.close{
+	position: absolute;
+    top: 1em;
+    right: 1em;
 }

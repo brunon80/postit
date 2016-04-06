@@ -11,14 +11,38 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
     <script>
-      var countryApp = angular.module('postitApp', []);
-      countryApp.controller('postItCtrl', function ($scope){
+      var postitApp = angular.module('postitApp', []);
+      postitApp.controller('postItCtrl', function ($scope){
+      	$scope.colorSelected = "green";
+  		$( '#blue' ).click(
+		  function() {
+		  	$scope.colorSelected = "blue";
 
-      	$scope.addPostIt = function() {
-          $scope.postIts.push({"title": $scope.enteredTitle, "text": $scope.enteredText, "color": $scope.enteredPostItColor});
-          $scope.enteredTitle = '';
-          $scope.enteredText = '';
-          $scope.enteredPostItColor = '';
+		  }
+		);
+		$( '#green' ).click(
+		  function() {
+		  	$scope.colorSelected = "green";
+
+		  }
+		);
+		$( '#red' ).click(
+		  function() {
+		  	$scope.colorSelected = "red";
+
+		  }
+		);
+      	$scope.addPostIt = function(enteredTitle, enteredText) {
+
+            $scope.postIts.push({title: enteredTitle, text: enteredText, color: $scope.colorSelected});
+            $scope.enteredTitle = '';
+            $scope.enteredText = '';
+            $scope.enteredPostItColor = '';
+        };
+
+        $scope.removePostIt = function(postIt) {
+          var i = $scope.postIts.indexOf(postIt);
+          $scope.postIts.splice(i, 1);
         };
 
         $scope.postIts = [
@@ -66,20 +90,20 @@
 		    <div class="modal-content">
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal">&times;</button>
-		        <h4 class="modal-title">Modal Header</h4>
+		        <h4 class="modal-title">Creating a Post It</h4>
 		      </div>
 		      <div class="modal-body">
-		        <form class="postItInput form-group" ng-submit="addPostIt()">
+		        <form class="postItInput form-group" ng-submit="addPostIt(enteredTitle, enteredText)">
 	        		<label class="text-defaut-padding">Give a Title to your Post It:</label>
-			     	<input type="text" ng-model="enteredTitle">
+			     	<input class="form-control" type="text" ng-model="enteredTitle">
 			     	<label class="text-defaut-padding">Just write what you need:</label>
 			      	<textarea class="form-control" rows="5" ng-model="enteredText"></textarea>
 			      	<label class="text-defaut-padding">Choose a Color:</label>
 			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
 			      	<div class="btn-group">
-					  <button type="button" class="btn btn-primary">Blue</button>
-					  <button type="button" class="btn btn-success">Green</button>
-					  <button type="button" class="btn btn-danger">Red</button>
+					  <button type="button" id="blue" class="btn btn-primary">Blue</button>
+					  <button type="button" id="green" class="btn btn-success">Green</button>
+					  <button type="button" id="red" class="btn btn-danger">Red</button>
 					</div>
 			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="add">
 			    </form>

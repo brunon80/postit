@@ -1,11 +1,13 @@
 body{
 	background-image: url("public/imgs/bg_bright_blue.jpg");
+	background-repeat: repeat-y;
 }
 
 .text-defaut-padding{
 	padding-top: 1em;
 	padding-bottom: 1em;
 }
+
 
 .button-defaut-margin{
 	margin-top: 1em;
@@ -38,7 +40,7 @@ body{
 
 .side-color{
 	background-color: green;
-	width: 10%;
+	width: 5%;
 }
 
 .content-postIt{

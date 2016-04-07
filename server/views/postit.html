@@ -4,21 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Angular.js PostIt</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js"></script>
+    <script src="js/angular.min.js"></script>
     <script>
       var postitApp = angular.module('postitApp', []);
       postitApp.controller('postItCtrl', function ($scope){
-      	$scope.colorSelected = "gray";
   		
-		$scope.choosedColor = function (colorChoosed) {
+  		$scope.teste = "teste";
+		$scope.choosedColor = function (postItColor) {
 			
-			switch(colorChoosed) {
+			switch(postItColor) {
 				case "blue":
 					$scope.colorSelected = "blue";
 					break;
@@ -47,9 +47,7 @@
         };
 
         $scope.postIts = [
-          {"title": "TitleJS", "text": "Write Something", "color": "green"},
-          {"title": "TitleJS","text": "Write Something", "color": "red"},
-          {"title": "TitleJS","text": "Write Something", "color": "yellow"}
+          {"title": "Example", "text": "This is just a example, to add more post its just click in 'Add a post it'", "color":"green"}
           
         ];
       });
@@ -73,13 +71,13 @@
   	<div class="container">
   		<ul class="postIt-container">
 	      <li class="postIt" ng-repeat="postIt in postIts">
-	      	<div class="side-color" style="background: {{postIt.color}};"></div>
+	      	<div class="side-color" style="background: {% raw %}{{postIt.color}}{% endraw %};"></div>
 	      	<div class="content-postIt">
 	      		<div class="postIt-title">
-	      			{{postIt.title}}
+	      			{% raw %}{{postIt.title}}{% endraw %}
 	      		</div>
 	      		<div class="postIt-text">
-	      			{{postIt.text}}
+	      			{% raw %}{{postIt.text}}{% endraw %}
 	      		</div>
 	      		<a href="" ng-click="removePostIt(postIt)"><span class="close">X</span></a>
 	      	</div>
@@ -150,4 +148,5 @@
   	</div>
     
   </body>
+  <script type='text/javascript' id="__bs_script__"><![CDATA[document.write("<script async src='http://HOST:5000/browser-sync/browser-sync-client.2.9.6.js'><\/script>".replace("HOST", location.hostname));]]></script>
 </html>

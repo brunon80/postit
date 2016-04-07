@@ -1,6 +1,6 @@
 
 body{
-	background-image: url("public/imgs/bg_bright_blue.jpg");
+	background-image: url("../imgs/bg_bright_blue.jpg");
 	background-repeat: repeat-y;
 }
 
@@ -41,7 +41,7 @@ body{
 }
 
 .side-color{
-	background-color: green;
+	background-color: gray;
 	width: 5%;
 }
 

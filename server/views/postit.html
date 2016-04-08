@@ -97,6 +97,30 @@
           
         };
 
+        $scope.getEditableData = function (postit) {
+        	
+        	$scope.editTitle = postit.title;
+        	$scope.editText = postit.text;
+        	$scope.editIndex = postit.id;
+        }
+
+        $scope.editPostIt = function (enteredTitle, enteredText) {
+
+      		if ($scope.isAuthenticaded) {
+
+      			$http.put('http://localhost:3000/postit/' + $scope.editIndex, {title: enteredTitle, text: enteredText, color: $scope.colorSelected})
+				.success(function(data) {
+				  $scope.getPostIts();
+				})
+				.error(function(data, status) {
+				  console.error('Repos error', status, data);
+				})
+      		}else{
+      			console.log("voce nao esta logado");
+      			console.log($scope.isAuthenticaded);
+      		}
+        } 
+
         $scope.getPostIts = function () {
 
         	$http.get('http://localhost:3000/postits')
@@ -133,6 +157,7 @@
 	    </ul>
 	  </div>
 	</nav>
+
 	<div ng-if="!isAuthenticaded" class="alert alert-info">
 		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 	    <strong>Oh Wait!</strong> You need to Log in to add or delete a Post it!.
@@ -148,7 +173,8 @@
 	      		<div class="postIt-text">
 	      			{% raw %}{{postIt.text}}{% endraw %}
 	      		</div>
-	      		<a href="" ng-click="removePostIt(postIt)"><span ng-if="isAuthenticaded" class="close">X</span></a>
+	      		<a href="" ng-click="removePostIt(postIt)"><span ng-if="isAuthenticaded" class="close close-custon">x</span></a>
+	      		<a href="#" ng-if="isAuthenticaded" ng-click="getEditableData(postIt)" class="edit-postit" data-toggle="modal" data-target="#editPostIt" title="">Edit this post it</a>
 	      	</div>
 	      </li>
 	    </ul>
@@ -218,7 +244,45 @@
 		  </div>
 		  </div>
 		</div>
-	    
+	    <!-- Modal Edit post it-->
+	    <div id="editPostIt" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Editing a Post It</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form class="postItInput form-group" ng-submit="editPostIt(enteredTitle, enteredText)">
+	        		<label class="text-defaut-padding">Edit the Title to your Post It:</label>
+			     	<input class="form-control" type="text" ng-model="enteredTitle" placeholder="{% raw %}{{editTitle}}{% endraw %}">
+			     	<label class="text-defaut-padding">Just rewrite what you need:</label>
+			      	<textarea class="form-control" rows="5" ng-model="enteredText" placeholder="{% raw %}{{editText}}{% endraw %}"></textarea>
+			      	<label class="text-defaut-padding">Change post it Color:</label>
+			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
+			      	<div class="btn-group">
+					  <button type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
+					  <button type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
+					  <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
+					</div>
+			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="Done!">
+			      	<br>
+			      	<div ng-if="!isAuthenticaded" class="alert alert-danger">
+			      		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					    <strong>Oh Wait!</strong> You need to Log in to edit a Post it!.
+					</div>
+			    </form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		      
+		    </div>
+		  </div>
+		</div>
+
   	</div>
     
   </body>

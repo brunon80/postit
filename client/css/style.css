@@ -58,6 +58,7 @@ body{
 
 .postIt-text{
 	display: initial;
+    width: 90%;
 }
 
 .close{

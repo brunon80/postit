@@ -69,7 +69,9 @@ router.put('/postit/:id', function(req, res) {
     if(postit){
       postit.updateAttributes({
         title: req.body.title,
-        complete: req.body.complete
+        text: req.body.text,
+        color: req.body.color,
+        UserId: req.body.user_id
       }).then(function(postit) {
         res.send(postit);
       });

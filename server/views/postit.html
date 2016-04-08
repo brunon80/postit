@@ -36,32 +36,43 @@
 
 		$scope.loginAttepmt = function(email,password){
 
-			$http.get('http://localhost:3000/users')
-			.success(function(data) {
-			  
-          		var allUsers = data;
-          		for (i=0; i<allUsers.length; i++ ){
-          			if (email === allUsers[i].email && password === allUsers[i].password) {
-          				isAuthenticaded = true;
-          				$scope.userName = email;
-          				console.log("logado");
-          			}else{
-          				console.log("falhou");
-          			}
-          		}
-			})
-			.error(function(data, status) {
-			  console.error('Repos error', status, data);
-			})
+			if ($scope.login.email.$valid != false && $scope.login.password.$valid != false) {
 
+				$http.get('http://localhost:3000/users')
+				.success(function(data) {
+				  
+	          		var allUsers = data;
+	          		for (i=0; i<allUsers.length; i++ ){
+	          			if (email === allUsers[i].email && password === allUsers[i].password) {
+	          				$scope.isAuthenticaded = true;
+	          				$scope.userName = email;
+	          				console.log("logado");
+	          			}else{
+	          				console.log("falhou");
+	          			}
+	          		}
+				})
+				.error(function(data, status) {
+				  console.error('Repos error', status, data);
+				})
+			}
 		}
 
       	$scope.addPostIt = function(enteredTitle, enteredText) {
 
-            $scope.postIts.push({title: enteredTitle, text: enteredText, color: $scope.colorSelected});
-            $scope.enteredTitle = '';
-            $scope.enteredText = '';
-            $scope.enteredPostItColor = '';
+      		if ($scope.isAuthenticaded) {
+
+      			$http.post('http://localhost:3000/postits', {title: enteredTitle, text: enteredText, color: $scope.colorSelected})
+				.success(function(data) {
+				  $scope.getPostIts();
+				})
+				.error(function(data, status) {
+				  console.error('Repos error', status, data);
+				})
+      		}else{
+      			console.log("voce nao esta logado");
+      			console.log($scope.isAuthenticaded);
+      		}
         };
 
         $scope.removePostIt = function(postIt) {
@@ -98,10 +109,8 @@
           	$scope.$apply();
         }, 1);
 
-        $scope.postIts = [
-          //{"title": "Example", "text": "This is just a example, to add more post its just click in 'Add a post it'", "color":"green"}
-          
-        ];
+        $scope.postIts = [];
+        
       });
     </script>
   </head>
@@ -176,12 +185,12 @@
 		          <h1 class="text-center">Login</h1>
 		      </div>
 		      <div class="modal-body">
-		          <form class="login-input">
+		          <form name="login" class="login-input">
 		            <div class="form-group">
-		              <input type="text" class="form-control" placeholder="Email" ng-model="email">
+		              <input type="email" class="form-control" placeholder="Email" name="email" ng-model="email" required>
 		            </div>
 		            <div class="form-group">
-		              <input type="password" class="form-control" placeholder="Password" ng-model="password">
+		              <input type="password" class="form-control" placeholder="Password" name="password" ng-model="password" required>
 		            </div>
 		            <div class="form-group">
 		              <button class="btn btn-primary btn-block" ng-click="loginAttepmt(email,password)" >Sign In</button>

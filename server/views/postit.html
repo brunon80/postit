@@ -11,6 +11,7 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <script src="js/angular.min.js"></script>
+
     <script>
       var postitApp = angular.module('postitApp', []);
       postitApp.controller('postItCtrl', function ($scope, $http){
@@ -76,21 +77,24 @@
         };
 
         $scope.removePostIt = function(postIt) {
-          //var postItSelected = $scope.postIts.indexOf(postIt);
-          var id = postIt.id;
-          //console.log(id);
+        	if ($scope.isAuthenticaded) {
+        		//var postItSelected = $scope.postIts.indexOf(postIt);
+	          var id = postIt.id;
+	          //console.log(id);
 
-          $http.delete('http://localhost:3000/postit/' + id)
-			.success(function(data) {
-			  
-          		$scope.getPostIts();
-			})
-			.error(function(data, status) {
-			  console.error('Repos error', status, data);
-			})
+	          $http.delete('http://localhost:3000/postit/' + id)
+				.success(function(data) {
+				  
+	          		$scope.getPostIts();
+				})
+				.error(function(data, status) {
+				  console.error('Repos error', status, data);
+				})
 
 
-          //$scope.postIts.splice(i, 1);
+	          //$scope.postIts.splice(i, 1);
+        	}
+          
         };
 
         $scope.getPostIts = function () {
@@ -110,7 +114,7 @@
         }, 1);
 
         $scope.postIts = [];
-        
+
       });
     </script>
   </head>
@@ -129,6 +133,10 @@
 	    </ul>
 	  </div>
 	</nav>
+	<div ng-if="!isAuthenticaded" class="alert alert-info">
+		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+	    <strong>Oh Wait!</strong> You need to Log in to add or delete a Post it!.
+	</div>
   	<div class="container">
   		<ul class="postIt-container">
 	      <li class="postIt" ng-repeat="postIt in postIts">
@@ -140,7 +148,7 @@
 	      		<div class="postIt-text">
 	      			{% raw %}{{postIt.text}}{% endraw %}
 	      		</div>
-	      		<a href="" ng-click="removePostIt(postIt)"><span class="close">X</span></a>
+	      		<a href="" ng-click="removePostIt(postIt)"><span ng-if="isAuthenticaded" class="close">X</span></a>
 	      	</div>
 	      </li>
 	    </ul>
@@ -167,6 +175,11 @@
 					  <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
 					</div>
 			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="add">
+			      	<br>
+			      	<div ng-if="!isAuthenticaded" class="alert alert-danger">
+			      		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					    <strong>Oh Wait!</strong> You need to Log in to add a Post it!.
+					</div>
 			    </form>
 		      </div>
 		      <div class="modal-footer">

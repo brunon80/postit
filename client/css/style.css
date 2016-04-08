@@ -75,3 +75,6 @@ body{
     margin-right: auto;
     margin-left: auto;
 }
+.navbar-inverse {
+    margin: 0 !important;
+}

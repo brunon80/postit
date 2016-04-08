@@ -13,7 +13,7 @@
     <script src="js/angular.min.js"></script>
     <script>
       var postitApp = angular.module('postitApp', []);
-      postitApp.controller('postItCtrl', function ($scope){
+      postitApp.controller('postItCtrl', function ($scope, $http){
   		
   		$scope.teste = "teste";
 		$scope.choosedColor = function (postItColor) {
@@ -45,6 +45,22 @@
           var i = $scope.postIts.indexOf(postIt);
           $scope.postIts.splice(i, 1);
         };
+
+        $scope.getPostIts = function () {
+
+        	$http.get('http://localhost:3000/postits')
+			.success(function(data) {
+			  $scope.postIts = data;
+			})
+			.error(function(data, status) {
+			  console.error('Repos error', status, data);
+			})
+        }
+
+        setTimeout(function(){
+          	$scope.getPostIts();
+          	$scope.$apply();
+        }, 1);
 
         $scope.postIts = [
           {"title": "Example", "text": "This is just a example, to add more post its just click in 'Add a post it'", "color":"green"}

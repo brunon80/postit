@@ -15,17 +15,34 @@ router.post('/users', function(req, res) {
   });
 });
 
+router.get('/users', function(req, res) {
+  models.User.findAll({}).then(function(users) {
+    res.json(users);
+  });
+});
+
+router.delete('/user/:id', function(req, res) {
+  models.User.destroy({
+    where: {
+      id: req.params.id
+    }
+  }).then(function(user) {
+    res.json(user);
+  });
+});
+
 router.get('/postits', function(req, res) {
-  models.Postit.findAll({}).then(function(postits) {
+  models.Postitdbp.findAll({}).then(function(postits) {
     res.json(postits);
   });
 });
 
 // add new postit
 router.post('/postits', function(req, res) {
-  models.Postit.create({
+  models.Postitdbp.create({
     title: req.body.title,
     text: req.body.text,
+    color: req.body.color,
     UserId: req.body.user_id
   }).then(function(post) {
     res.json(post);
@@ -33,7 +50,7 @@ router.post('/postits', function(req, res) {
 });
 
 router.get('/postit/:id', function(req, res) {
-  models.Postit.find({
+  models.Postitdbp.find({
     where: {
       id: req.params.id
     }
@@ -44,7 +61,7 @@ router.get('/postit/:id', function(req, res) {
 
 // update single postit
 router.put('/postit/:id', function(req, res) {
-  models.Postit.find({
+  models.Postitdbp.find({
     where: {
       id: req.params.id
     }
@@ -62,7 +79,7 @@ router.put('/postit/:id', function(req, res) {
 
 // delete a single postit
 router.delete('/postit/:id', function(req, res) {
-  models.Postit.destroy({
+  models.Postitdbp.destroy({
     where: {
       id: req.params.id
     }

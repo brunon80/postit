@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: function(queryInterface, Sequelize) {
-    return queryInterface.createTable('Postits', {
+    return queryInterface.createTable('Postitdbps', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,6 +12,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       text: {
+        type: Sequelize.STRING
+      },
+      color: {
         type: Sequelize.STRING
       },
       UserId: {
@@ -28,6 +31,6 @@ module.exports = {
     });
   },
   down: function(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Postits');
+    return queryInterface.dropTable('Postitdbps');
   }
 };

@@ -1,16 +1,16 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
-  var Postit = sequelize.define('Postit', {
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
+  var Postitdbp = sequelize.define('Postitdbp', {
+    title: DataTypes.STRING,
+    text: DataTypes.STRING,
     color: DataTypes.STRING,
     UserId: DataTypes.INTEGER
   }, {
     classMethods: {
       associate: function(models) {
-        Postit.belongsTo(models.User);
+        Postitdbp.belongsTo(models.User);
       }
     }
   });
-  return Postit;
+  return Postitdbp;
 };

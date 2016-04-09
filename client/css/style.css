@@ -85,7 +85,13 @@ body{
     margin-bottom: 1em;
 }
 
-
+.input-group {
+    position: relative;
+    display: table;
+    border-collapse: separate;
+    width: 21em;
+    padding-top: 0.5em;
+}
 
 
 

@@ -150,6 +150,14 @@
 	    </div>
 	    <ul class="nav navbar-nav">
 	      <li data-toggle="modal" data-target="#createPostIt"><a href="#">Add a post it</a></li>
+	      <li>
+	      	<div class="input-group">
+		      <input ng-model="query" type="text" class="form-control" placeholder="Search for post it...">
+		      <span class="input-group-btn">
+		        <button class="btn btn-default" type="button">Go!</button>
+		      </span>
+		    </div>
+		    </li>
 	    </ul>
 	    <ul class="nav navbar-nav navbar-right">
 	      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -164,7 +172,7 @@
 	</div>
   	<div class="container">
   		<ul class="postIt-container">
-	      <li class="postIt" ng-repeat="postIt in postIts">
+	      <li class="postIt" ng-repeat="postIt in postIts | filter:query">
 	      	<div class="side-color" style="background: {% raw %}{{postIt.color}}{% endraw %};"></div>
 	      	<div class="content-postIt">
 	      		<div class="postIt-title">
@@ -190,17 +198,17 @@
 		      <div class="modal-body">
 		        <form class="postItInput form-group" ng-submit="addPostIt(enteredTitle, enteredText)">
 	        		<label class="text-defaut-padding">Give a Title to your Post It:</label>
-			     	<input class="form-control" type="text" ng-model="enteredTitle">
+			     	<input ng-disabled="!isAuthenticaded" class="form-control" type="text" ng-model="enteredTitle">
 			     	<label class="text-defaut-padding">Just write what you need:</label>
-			      	<textarea class="form-control" rows="5" ng-model="enteredText"></textarea>
+			      	<textarea ng-disabled="!isAuthenticaded" class="form-control" rows="5" ng-model="enteredText"></textarea>
 			      	<label class="text-defaut-padding">Choose a Color:</label>
 			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
 			      	<div class="btn-group">
-					  <button type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
-					  <button type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
-					  <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
+					  <button ng-disabled="!isAuthenticaded" type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
+					  <button ng-disabled="!isAuthenticaded" type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
+					  <button ng-disabled="!isAuthenticaded" type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
 					</div>
-			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="add">
+			      	<input ng-disabled="!isAuthenticaded" class="button-defaut-margin btn btn-primary" type="submit" value="add">
 			      	<br>
 			      	<div ng-if="!isAuthenticaded" class="alert alert-danger">
 			      		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>

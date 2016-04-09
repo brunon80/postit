@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../fonts/glyphicons-halflings-regular.eot');
+  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
 
 body{
 	background-image: url("../imgs/bg_bright_blue.jpg");
@@ -61,10 +66,10 @@ body{
     width: 90%;
 }
 
-.close{
-	position: absolute;
-    top: 1em;
-    right: 1em;
+.close-custon{
+	position: absolute !important;
+    top: 1em !important;
+    right: 1em !important;
 }
 .modal-footer {   border-top: 0px; }
 
@@ -78,3 +83,22 @@ body{
 .navbar-inverse {
     margin: 0 !important;
 }
+
+.edit-postit{
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 1em;
+}
+
+.input-group {
+    position: relative;
+    display: table;
+    border-collapse: separate;
+    width: 21em;
+    padding-top: 0.5em;
+}
+
+
+
+
+

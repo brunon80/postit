@@ -6,10 +6,10 @@
     <title>Angular.js PostIt</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	<link rel="stylesheet" href="libs/bootstrap.min.css">
+	<script src="libs/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="libs/bootstrap.min.js"></script>
     <script src="js/angular.min.js"></script>
 
     <script>
@@ -47,6 +47,7 @@
 	          			if (email === allUsers[i].email && password === allUsers[i].password) {
 	          				$scope.isAuthenticaded = true;
 	          				$scope.userName = email;
+	          				
 	          				console.log("logado");
 	          			}else{
 	          				console.log("falhou");
@@ -97,6 +98,30 @@
           
         };
 
+        $scope.getEditableData = function (postit) {
+        	
+        	$scope.editTitle = postit.title;
+        	$scope.editText = postit.text;
+        	$scope.editIndex = postit.id;
+        }
+
+        $scope.editPostIt = function (enteredTitle, enteredText) {
+
+      		if ($scope.isAuthenticaded) {
+
+      			$http.put('http://localhost:3000/postit/' + $scope.editIndex, {title: enteredTitle, text: enteredText, color: $scope.colorSelected})
+				.success(function(data) {
+				  $scope.getPostIts();
+				})
+				.error(function(data, status) {
+				  console.error('Repos error', status, data);
+				})
+      		}else{
+      			console.log("voce nao esta logado");
+      			console.log($scope.isAuthenticaded);
+      		}
+        } 
+
         $scope.getPostIts = function () {
 
         	$http.get('http://localhost:3000/postits')
@@ -122,10 +147,18 @@
   <nav class="navbar navbar-inverse">
 	  <div class="container-fluid">
 	    <div class="navbar-header">
-	      <a class="navbar-brand" href="#">{% raw %}{{userName}}{% endraw %}</a>
+	      <a class="active navbar-brand" href="#">{% raw %}{{userName}}{% endraw %}</a>
 	    </div>
 	    <ul class="nav navbar-nav">
 	      <li data-toggle="modal" data-target="#createPostIt"><a href="#">Add a post it</a></li>
+	      <li>
+	      	<div class="input-group">
+		      <input ng-model="query" type="text" class="form-control" placeholder="Search for post it...">
+		      <span class="input-group-btn">
+		        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+		      </span>
+		    </div>
+		    </li>
 	    </ul>
 	    <ul class="nav navbar-nav navbar-right">
 	      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -133,13 +166,14 @@
 	    </ul>
 	  </div>
 	</nav>
+
 	<div ng-if="!isAuthenticaded" class="alert alert-info">
 		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 	    <strong>Oh Wait!</strong> You need to Log in to add or delete a Post it!.
 	</div>
   	<div class="container">
   		<ul class="postIt-container">
-	      <li class="postIt" ng-repeat="postIt in postIts">
+	      <li class="postIt" ng-repeat="postIt in postIts | filter:query">
 	      	<div class="side-color" style="background: {% raw %}{{postIt.color}}{% endraw %};"></div>
 	      	<div class="content-postIt">
 	      		<div class="postIt-title">
@@ -148,7 +182,8 @@
 	      		<div class="postIt-text">
 	      			{% raw %}{{postIt.text}}{% endraw %}
 	      		</div>
-	      		<a href="" ng-click="removePostIt(postIt)"><span ng-if="isAuthenticaded" class="close">X</span></a>
+	      		<a href="" ng-click="removePostIt(postIt)"><span ng-if="isAuthenticaded" class="close close-custon">x</span></a>
+	      		<a href="#" ng-if="isAuthenticaded" ng-click="getEditableData(postIt)" class="edit-postit" data-toggle="modal" data-target="#editPostIt" title="">Edit this post it</a>
 	      	</div>
 	      </li>
 	    </ul>
@@ -164,17 +199,17 @@
 		      <div class="modal-body">
 		        <form class="postItInput form-group" ng-submit="addPostIt(enteredTitle, enteredText)">
 	        		<label class="text-defaut-padding">Give a Title to your Post It:</label>
-			     	<input class="form-control" type="text" ng-model="enteredTitle">
+			     	<input ng-disabled="!isAuthenticaded" class="form-control" type="text" ng-model="enteredTitle">
 			     	<label class="text-defaut-padding">Just write what you need:</label>
-			      	<textarea class="form-control" rows="5" ng-model="enteredText"></textarea>
+			      	<textarea ng-disabled="!isAuthenticaded" class="form-control" rows="5" ng-model="enteredText"></textarea>
 			      	<label class="text-defaut-padding">Choose a Color:</label>
 			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
 			      	<div class="btn-group">
-					  <button type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
-					  <button type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
-					  <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
+					  <button ng-disabled="!isAuthenticaded" type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
+					  <button ng-disabled="!isAuthenticaded" type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
+					  <button ng-disabled="!isAuthenticaded" type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
 					</div>
-			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="add">
+			      	<input ng-disabled="!isAuthenticaded" class="button-defaut-margin btn btn-primary" type="submit" value="add">
 			      	<br>
 			      	<div ng-if="!isAuthenticaded" class="alert alert-danger">
 			      		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -206,7 +241,7 @@
 		              <input type="password" class="form-control" placeholder="Password" name="password" ng-model="password" required>
 		            </div>
 		            <div class="form-group">
-		              <button class="btn btn-primary btn-block" ng-click="loginAttepmt(email,password)" >Sign In</button>
+		              <button data-dismiss="modal" class="btn btn-primary btn-block" ng-click="loginAttepmt(email,password)" >Sign In</button>
 		            </div>
 		          </form>
 		      </div>
@@ -218,7 +253,45 @@
 		  </div>
 		  </div>
 		</div>
-	    
+	    <!-- Modal Edit post it-->
+	    <div id="editPostIt" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Editing a Post It</h4>
+		      </div>
+		      <div class="modal-body">
+		        <form class="postItInput form-group" ng-submit="editPostIt(enteredTitle, enteredText)">
+	        		<label class="text-defaut-padding">Edit the Title to your Post It:</label>
+			     	<input class="form-control" type="text" ng-model="enteredTitle" placeholder="{% raw %}{{editTitle}}{% endraw %}">
+			     	<label class="text-defaut-padding">Just rewrite what you need:</label>
+			      	<textarea class="form-control" rows="5" ng-model="enteredText" placeholder="{% raw %}{{editText}}{% endraw %}"></textarea>
+			      	<label class="text-defaut-padding">Change post it Color:</label>
+			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
+			      	<div class="btn-group">
+					  <button type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
+					  <button type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
+					  <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
+					</div>
+			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="Done!">
+			      	<br>
+			      	<div ng-if="!isAuthenticaded" class="alert alert-danger">
+			      		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					    <strong>Oh Wait!</strong> You need to Log in to edit a Post it!.
+					</div>
+			    </form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		      </div>
+		      
+		    </div>
+		  </div>
+		</div>
+
   	</div>
     
   </body>

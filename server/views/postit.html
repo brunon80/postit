@@ -6,10 +6,10 @@
     <title>Angular.js PostIt</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	<link rel="stylesheet" href="libs/bootstrap.min.css">
+	<script src="libs/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<script src="libs/bootstrap.min.js"></script>
     <script src="js/angular.min.js"></script>
 
     <script>
@@ -47,6 +47,7 @@
 	          			if (email === allUsers[i].email && password === allUsers[i].password) {
 	          				$scope.isAuthenticaded = true;
 	          				$scope.userName = email;
+	          				
 	          				console.log("logado");
 	          			}else{
 	          				console.log("falhou");
@@ -146,7 +147,7 @@
   <nav class="navbar navbar-inverse">
 	  <div class="container-fluid">
 	    <div class="navbar-header">
-	      <a class="navbar-brand" href="#">{% raw %}{{userName}}{% endraw %}</a>
+	      <a class="active navbar-brand" href="#">{% raw %}{{userName}}{% endraw %}</a>
 	    </div>
 	    <ul class="nav navbar-nav">
 	      <li data-toggle="modal" data-target="#createPostIt"><a href="#">Add a post it</a></li>
@@ -154,7 +155,7 @@
 	      	<div class="input-group">
 		      <input ng-model="query" type="text" class="form-control" placeholder="Search for post it...">
 		      <span class="input-group-btn">
-		        <button class="btn btn-default" type="button">Go!</button>
+		        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
 		      </span>
 		    </div>
 		    </li>

@@ -1,299 +1,305 @@
 <!DOCTYPE html>
 <html ng-app="postitApp">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>Angular.js PostIt</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="libs/bootstrap.min.css">
-	<script src="libs/jquery.min.js"></script>
-	<!-- Latest compiled and minified JavaScript -->
-	<script src="libs/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="libs/bootstrap.min.css">
+    <script src="libs/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="libs/bootstrap.min.js"></script>
     <script src="js/angular.min.js"></script>
-
     <script>
-      var postitApp = angular.module('postitApp', []);
-      postitApp.controller('postItCtrl', function ($scope, $http){
-  		
-  		$scope.isAuthenticaded = false;
-  		$scope.userName = 'Post It!'
-		$scope.choosedColor = function (postItColor) {
-			
-			switch(postItColor) {
-				case "blue":
-					$scope.colorSelected = "blue";
-					break;
-				case "green":
-					$scope.colorSelected = "green";
-					break;
-				case "red":
-					$scope.colorSelected = "red";
-					break;
-				default:
-					 $scope.colorSelected = "gray"
-			}
-		}
+    var postitApp = angular.module('postitApp', []);
 
-		$scope.loginAttepmt = function(email,password){
+    postitApp.factory('login', function($http) {
+        return {
+            requestLogin: function(email, password, callback) {
+                $http.get('http://localhost:3000/users').success(function(users) {
+                    for (i = 0; i < users.length; i++) {
+                        if (email === users[i].email && password === users[i].password) {
+                            callback(users[i]);
+                            console.log("logado");
+                        } else {
+                            console.log("falhou");
+                        }
+                    }
+                });
 
-			if ($scope.login.email.$valid != false && $scope.login.password.$valid != false) {
+            }
+        };
+    });
 
-				$http.get('http://localhost:3000/users')
-				.success(function(data) {
-				  
-	          		var allUsers = data;
-	          		for (i=0; i<allUsers.length; i++ ){
-	          			if (email === allUsers[i].email && password === allUsers[i].password) {
-	          				$scope.isAuthenticaded = true;
-	          				$scope.userName = email;
-	          				
-	          				console.log("logado");
-	          			}else{
-	          				console.log("falhou");
-	          			}
-	          		}
-				})
-				.error(function(data, status) {
-				  console.error('Repos error', status, data);
-				})
-			}
-		}
+    postitApp.factory('postits', function($http) {
+        return {
+            list: function(callback) {
+                $http.get('http://localhost:3000/postits').success(callback);
+            },
+            add: function(enteredTitle, enteredText, colorSelected, callback) {
+                $http.post('http://localhost:3000/postits', {
+                    title: enteredTitle,
+                    text: enteredText,
+                    color: colorSelected
+                }).success(callback);
+            },
+            delete: function(id, callback) {
+                $http.delete('http://localhost:3000/postit/' + id).success(callback);
+            },
+            edit: function(enteredTitle, enteredText, colorSelected, editIndex, callback) {
+                $http.put('http://localhost:3000/postit/' + editIndex, {
+                    title: enteredTitle,
+                    text: enteredText,
+                    color: colorSelected
+                }).success(callback);
+            },
+        };
+    });
 
-      	$scope.addPostIt = function(enteredTitle, enteredText) {
+    postitApp.controller('postItCtrl', function($scope, postits, login) {
 
-      		if ($scope.isAuthenticaded) {
+        $scope.isAuthenticaded = false;
+        $scope.userName = 'Post It!'
+        $scope.postIts = [];
+        $('#loginModal').modal();
 
-      			$http.post('http://localhost:3000/postits', {title: enteredTitle, text: enteredText, color: $scope.colorSelected})
-				.success(function(data) {
-				  $scope.getPostIts();
-				})
-				.error(function(data, status) {
-				  console.error('Repos error', status, data);
-				})
-      		}else{
-      			console.log("voce nao esta logado");
-      			console.log($scope.isAuthenticaded);
-      		}
+        $scope.getPostIts = function() {
+
+            postits.list(function(postits) {
+                $scope.postIts = postits;
+            });
+        }
+
+        $scope.getPostIts();
+
+        $scope.choosedColor = function(postItColor) {
+
+            switch (postItColor) {
+                case "blue":
+                    $scope.colorSelected = "blue";
+                    break;
+                case "green":
+                    $scope.colorSelected = "green";
+                    break;
+                case "red":
+                    $scope.colorSelected = "red";
+                    break;
+                default:
+                    $scope.colorSelected = "gray"
+            }
+        }
+
+        $scope.loginAttepmt = function(email, password) {
+
+            if ($scope.login.email.$valid != false && $scope.login.password.$valid != false) {
+
+                login.requestLogin(email, password, function(user) {
+                    $scope.isAuthenticaded = true;
+                    $scope.userName = user.email;
+                    $('#loginModal').modal("hide");
+                });
+            }
+        }
+
+        $scope.addPostIt = function(enteredTitle, enteredText) {
+
+            if ($scope.isAuthenticaded) {
+                var color = $scope.colorSelected;
+                postits.add(enteredTitle, enteredText, color, function(postits) {
+                    $scope.getPostIts();
+                });
+
+            } else {
+                console.log("voce nao esta logado");
+                console.log($scope.isAuthenticaded);
+            }
         };
 
         $scope.removePostIt = function(postIt) {
-        	if ($scope.isAuthenticaded) {
-        		//var postItSelected = $scope.postIts.indexOf(postIt);
-	          var id = postIt.id;
-	          //console.log(id);
+            if ($scope.isAuthenticaded) {
 
-	          $http.delete('http://localhost:3000/postit/' + id)
-				.success(function(data) {
-				  
-	          		$scope.getPostIts();
-				})
-				.error(function(data, status) {
-				  console.error('Repos error', status, data);
-				})
+                postits.delete(postIt.id, function(postit) {
+                    $scope.getPostIts();
+                });
+            }
 
-
-	          //$scope.postIts.splice(i, 1);
-        	}
-          
         };
 
-        $scope.getEditableData = function (postit) {
-        	
-        	$scope.editTitle = postit.title;
-        	$scope.editText = postit.text;
-        	$scope.editIndex = postit.id;
+        $scope.getEditableData = function(postit) {
+
+            $scope.editTitle = postit.title;
+            $scope.editText = postit.text;
+            $scope.editIndex = postit.id;
+
         }
 
-        $scope.editPostIt = function (enteredTitle, enteredText) {
+        $scope.editPostIt = function(enteredTitle, enteredText) {
 
-      		if ($scope.isAuthenticaded) {
+            if ($scope.isAuthenticaded) {
 
-      			$http.put('http://localhost:3000/postit/' + $scope.editIndex, {title: enteredTitle, text: enteredText, color: $scope.colorSelected})
-				.success(function(data) {
-				  $scope.getPostIts();
-				})
-				.error(function(data, status) {
-				  console.error('Repos error', status, data);
-				})
-      		}else{
-      			console.log("voce nao esta logado");
-      			console.log($scope.isAuthenticaded);
-      		}
-        } 
+                postits.edit(enteredTitle, enteredText, $scope.colorSelected, $scope.editIndex, function(postits) {
 
-        $scope.getPostIts = function () {
+                    $scope.getPostIts();
 
-        	$http.get('http://localhost:3000/postits')
-			.success(function(data) {
-			  $scope.postIts = data;
-			})
-			.error(function(data, status) {
-			  console.error('Repos error', status, data);
-			})
+                });
+            } else {
+                console.log("voce nao esta logado");
+                console.log($scope.isAuthenticaded);
+            }
         }
 
-        setTimeout(function(){
-          	$scope.getPostIts();
-          	$scope.$apply();
-        }, 1);
 
-        $scope.postIts = [];
 
-      });
+    });
     </script>
-  </head>
-  <body ng-controller="postItCtrl">
-  <nav class="navbar navbar-inverse">
-	  <div class="container-fluid">
-	    <div class="navbar-header">
-	      <a class="active navbar-brand" href="#">{% raw %}{{userName}}{% endraw %}</a>
-	    </div>
-	    <ul class="nav navbar-nav">
-	      <li data-toggle="modal" data-target="#createPostIt"><a href="#">Add a post it</a></li>
-	      <li>
-	      	<div class="input-group">
-		      <input ng-model="query" type="text" class="form-control" placeholder="Search for post it...">
-		      <span class="input-group-btn">
+</head>
+
+<body ng-controller="postItCtrl">
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="active navbar-brand" href="#">{% raw %}{{userName}}{% endraw %}</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li data-toggle="modal" data-target="#createPostIt"><a href="#">Add a post it</a></li>
+                <li>
+                    <div class="input-group">
+                        <input ng-model="query" type="text" class="form-control" placeholder="Search for post it...">
+                        <span class="input-group-btn">
 		        <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-		      </span>
-		    </div>
-		    </li>
-	    </ul>
-	    <ul class="nav navbar-nav navbar-right">
-	      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-	      <li data-toggle="modal" data-target="#loginModal"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-	    </ul>
-	  </div>
-	</nav>
+                        </span>
+                    </div>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li data-toggle="modal" data-target="#loginModal"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div ng-if="!isAuthenticaded" class="alert alert-info">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Oh Wait!</strong> You need to Log in to add or delete a Post it!.
+    </div>
+    <div class="container">
+        <ul class="postIt-container">
+            <li class="postIt" ng-repeat="postIt in postIts | filter:query">
+                <div class="side-color" style="background: {% raw %}{{postIt.color}}{% endraw %};"></div>
+                <div class="content-postIt">
+                    <div class="postIt-title">
+                        {% raw %}{{postIt.title}}{% endraw %}
+                    </div>
+                    <div class="postIt-text">
+                        {% raw %}{{postIt.text}}{% endraw %}
+                    </div>
+                    <a href="" ng-click="removePostIt(postIt)"><span ng-if="isAuthenticaded" class="close close-custon">x</span></a>
+                    <a href="#" ng-if="isAuthenticaded" ng-click="getEditableData(postIt)" class="edit-postit" data-toggle="modal" data-target="#editPostIt" title="">Edit this post it</a>
+                </div>
+            </li>
+        </ul>
+        <div id="createPostIt" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Creating a Post It</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="postItInput form-group" ng-submit="addPostIt(enteredTitle, enteredText)">
+                            <label class="text-defaut-padding">Give a Title to your Post It:</label>
+                            <input ng-disabled="!isAuthenticaded" class="form-control" type="text" ng-model="enteredTitle">
+                            <label class="text-defaut-padding">Just write what you need:</label>
+                            <textarea ng-disabled="!isAuthenticaded" class="form-control" rows="5" ng-model="enteredText"></textarea>
+                            <label class="text-defaut-padding">Choose a Color:</label>
+                            <!-- <input type="text" ng-model="enteredPostItColor"> -->
+                            <div class="btn-group">
+                                <button ng-disabled="!isAuthenticaded" type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
+                                <button ng-disabled="!isAuthenticaded" type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
+                                <button ng-disabled="!isAuthenticaded" type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
+                            </div>
+                            <input ng-disabled="!isAuthenticaded" class="button-defaut-margin btn btn-primary" type="submit" value="add">
+                            <br>
+                            <div ng-if="!isAuthenticaded" class="alert alert-danger">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>Oh Wait!</strong> You need to Log in to add a Post it!.
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--login modal-->
+        <div id="loginModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h1 class="text-center">Login</h1>
+                    </div>
+                    <div class="modal-body">
+                        <form name="login" class="login-input">
+                            <div class="form-group">
+                                <input type="email" class="form-control" placeholder="Email" name="email" ng-model="email" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Password" name="password" ng-model="password" required>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block" ng-click="loginAttepmt(email,password)">Sign In</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="col-md-12">
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Edit post it-->
+        <div id="editPostIt" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Editing a Post It</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="postItInput form-group" ng-submit="editPostIt(enteredTitle, enteredText)">
+                            <label class="text-defaut-padding">Edit the Title to your Post It:</label>
+                            <input class="form-control" type="text" ng-model="enteredTitle" placeholder="{% raw %}{{editTitle}}{% endraw %}">
+                            <label class="text-defaut-padding">Just rewrite what you need:</label>
+                            <textarea class="form-control" rows="5" ng-model="enteredText" placeholder="{% raw %}{{editText}}{% endraw %}"></textarea>
+                            <label class="text-defaut-padding">Change post it Color:</label>
+                            <!-- <input type="text" ng-model="enteredPostItColor"> -->
+                            <div class="btn-group">
+                                <button type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
+                                <button type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
+                                <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
+                            </div>
+                            <input class="button-defaut-margin btn btn-primary" type="submit" value="Done!">
+                            <br>
+                            <div ng-if="!isAuthenticaded" class="alert alert-danger">
+                                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                <strong>Oh Wait!</strong> You need to Log in to edit a Post it!.
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
 
-	<div ng-if="!isAuthenticaded" class="alert alert-info">
-		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-	    <strong>Oh Wait!</strong> You need to Log in to add or delete a Post it!.
-	</div>
-  	<div class="container">
-  		<ul class="postIt-container">
-	      <li class="postIt" ng-repeat="postIt in postIts | filter:query">
-	      	<div class="side-color" style="background: {% raw %}{{postIt.color}}{% endraw %};"></div>
-	      	<div class="content-postIt">
-	      		<div class="postIt-title">
-	      			{% raw %}{{postIt.title}}{% endraw %}
-	      		</div>
-	      		<div class="postIt-text">
-	      			{% raw %}{{postIt.text}}{% endraw %}
-	      		</div>
-	      		<a href="" ng-click="removePostIt(postIt)"><span ng-if="isAuthenticaded" class="close close-custon">x</span></a>
-	      		<a href="#" ng-if="isAuthenticaded" ng-click="getEditableData(postIt)" class="edit-postit" data-toggle="modal" data-target="#editPostIt" title="">Edit this post it</a>
-	      	</div>
-	      </li>
-	    </ul>
-	    <div id="createPostIt" class="modal fade" role="dialog">
-		  <div class="modal-dialog">
-
-		    <!-- Modal content-->
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal">&times;</button>
-		        <h4 class="modal-title">Creating a Post It</h4>
-		      </div>
-		      <div class="modal-body">
-		        <form class="postItInput form-group" ng-submit="addPostIt(enteredTitle, enteredText)">
-	        		<label class="text-defaut-padding">Give a Title to your Post It:</label>
-			     	<input ng-disabled="!isAuthenticaded" class="form-control" type="text" ng-model="enteredTitle">
-			     	<label class="text-defaut-padding">Just write what you need:</label>
-			      	<textarea ng-disabled="!isAuthenticaded" class="form-control" rows="5" ng-model="enteredText"></textarea>
-			      	<label class="text-defaut-padding">Choose a Color:</label>
-			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
-			      	<div class="btn-group">
-					  <button ng-disabled="!isAuthenticaded" type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
-					  <button ng-disabled="!isAuthenticaded" type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
-					  <button ng-disabled="!isAuthenticaded" type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
-					</div>
-			      	<input ng-disabled="!isAuthenticaded" class="button-defaut-margin btn btn-primary" type="submit" value="add">
-			      	<br>
-			      	<div ng-if="!isAuthenticaded" class="alert alert-danger">
-			      		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-					    <strong>Oh Wait!</strong> You need to Log in to add a Post it!.
-					</div>
-			    </form>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		      </div>
-		      
-		    </div>
-		  </div>
-		</div>
-		<!--login modal-->
-		<div id="loginModal" class="modal fade" role="dialog">
-		  <div class="modal-dialog">
-		  <div class="modal-content">
-		      <div class="modal-header">
-		          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		          <h1 class="text-center">Login</h1>
-		      </div>
-		      <div class="modal-body">
-		          <form name="login" class="login-input">
-		            <div class="form-group">
-		              <input type="email" class="form-control" placeholder="Email" name="email" ng-model="email" required>
-		            </div>
-		            <div class="form-group">
-		              <input type="password" class="form-control" placeholder="Password" name="password" ng-model="password" required>
-		            </div>
-		            <div class="form-group">
-		              <button data-dismiss="modal" class="btn btn-primary btn-block" ng-click="loginAttepmt(email,password)" >Sign In</button>
-		            </div>
-		          </form>
-		      </div>
-		      <div class="modal-footer">
-		          <div class="col-md-12">
-		          <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-				  </div>	
-		      </div>
-		  </div>
-		  </div>
-		</div>
-	    <!-- Modal Edit post it-->
-	    <div id="editPostIt" class="modal fade" role="dialog">
-		  <div class="modal-dialog">
-
-		    <!-- Modal content-->
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal">&times;</button>
-		        <h4 class="modal-title">Editing a Post It</h4>
-		      </div>
-		      <div class="modal-body">
-		        <form class="postItInput form-group" ng-submit="editPostIt(enteredTitle, enteredText)">
-	        		<label class="text-defaut-padding">Edit the Title to your Post It:</label>
-			     	<input class="form-control" type="text" ng-model="enteredTitle" placeholder="{% raw %}{{editTitle}}{% endraw %}">
-			     	<label class="text-defaut-padding">Just rewrite what you need:</label>
-			      	<textarea class="form-control" rows="5" ng-model="enteredText" placeholder="{% raw %}{{editText}}{% endraw %}"></textarea>
-			      	<label class="text-defaut-padding">Change post it Color:</label>
-			      	<!-- <input type="text" ng-model="enteredPostItColor"> -->
-			      	<div class="btn-group">
-					  <button type="button" id="blue" class="btn btn-primary" ng-click="choosedColor('blue')">Blue</button>
-					  <button type="button" id="green" class="btn btn-success" ng-click="choosedColor('green')">Green</button>
-					  <button type="button" id="red" class="btn btn-danger" ng-click="choosedColor('red')">Red</button>
-					</div>
-			      	<input class="button-defaut-margin btn btn-primary" type="submit" value="Done!">
-			      	<br>
-			      	<div ng-if="!isAuthenticaded" class="alert alert-danger">
-			      		<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-					    <strong>Oh Wait!</strong> You need to Log in to edit a Post it!.
-					</div>
-			    </form>
-		      </div>
-		      <div class="modal-footer">
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		      </div>
-		      
-		    </div>
-		  </div>
-		</div>
-
-  	</div>
-    
-  </body>
-  
 </html>

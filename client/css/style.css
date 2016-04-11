@@ -33,8 +33,9 @@ body{
     margin: 1em;
     width: 330px;
     height: 330px;    
-    background: floralwhite;
+    background: floralwhite !important;
     border-radius: 10px;
+    border: none !important;
 }
 
 .postItInput{

@@ -23,16 +23,12 @@
     postitApp.factory('login', function($http) {
         return {
             requestLogin: function(email, password, callback) {
-                $http.get('http://localhost:3000/users').success(function(users) {
-                    for (i = 0; i < users.length; i++) {
-                        if (email === users[i].email && password === users[i].password) {
-                            callback(users[i]);
-                            console.log("logado");
-                        } else {
-                            console.log("falhou");
-                        }
-                    }
-                });
+                $http.post('http://localhost:3000/authenticate',{
+
+                    email: email,
+                    password: password
+
+                }).success(callback);
 
             }
         };
@@ -105,9 +101,10 @@
 
             if ($scope.login.email.$valid != false && $scope.login.password.$valid != false) {
 
-                login.requestLogin(email, password, function(user) {
-                    $scope.isAuthenticaded = true;
-                    $scope.userName = user.email;
+                login.requestLogin(email, password, function(callback) {
+                    $scope.isAuthenticaded = callback.success;
+                    $scope.userName = callback.email;
+                    $scope.token = callback.token;
                     $('#loginModal').modal("hide");
                 });
             }
@@ -160,7 +157,11 @@
             }
         }
 
-
+        $scope.logOut = function(){
+        	if ($scope.isAuthenticaded) {
+        		$scope.isAuthenticaded = false;
+        	}
+        }
 
     });
     </script>
@@ -184,8 +185,9 @@
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                <li data-toggle="modal" data-target="#loginModal"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                <li ng-if="!isAuthenticaded"><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li ng-if="isAuthenticaded" ng-click="logOut()"><a href="#"><span class="glyphicon glyphicon glyphicon-log-out"></span> Log out</a></li>
+                <li ng-if="!isAuthenticaded" data-toggle="modal" data-target="#loginModal"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
             </ul>
         </div>
     </nav>

@@ -16,7 +16,7 @@
 
 3. Download the ZIP file from http://www.enterprisedb.com/products-services-training/pgbindownload
 
-4. Unzip the archive into a directory of your choice (the archive is created such that unzipping it, it will create a directory pgsql with everything else below that)
+4. Unzip the archive into a directory of your choice (the archive is created such that unzipping it, it will create a directory pgsql with everything else below that) 
 
 5. Run initdb (this can be found in the subdirectory pgsql\bin)
 

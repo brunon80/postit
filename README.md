@@ -57,7 +57,7 @@ curl --data "email=anyEmailYouWant&password=anyPasswordYouWant" http://127.0.0.1
 
 curl --data "title=anyTitleYouWant&text=anTitleYouWant&color=greenOrRedOrBlue&user_id=1" http://127.0.0.1:3000/postits
 
-============================================================================================================
+=======================================================================================================================
 
 ## That`s it!
 
